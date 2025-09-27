@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "@/app/(components)/Header";
 
 type UserSetting = {
@@ -20,10 +20,26 @@ const mockSettings: UserSetting[] = [
 const Settings = () => {
   const [userSettings, setUserSettings] = useState<UserSetting[]>(mockSettings);
 
+  useEffect(() => {
+    const saved = localStorage.getItem("darkMode") === "true";
+    if (saved) document.documentElement.classList.add("dark");
+  }, []);
+
   const handleToggleChange = (index: number) => {
     const settingsCopy = [...userSettings];
-    settingsCopy[index].value = !settingsCopy[index].value as boolean;
+    const newValue = !(settingsCopy[index].value as boolean);
+    settingsCopy[index].value = newValue;
     setUserSettings(settingsCopy);
+
+    if (settingsCopy[index].label === "Dark Mode") {
+      if (newValue) {
+        document.documentElement.classList.add("dark");
+        localStorage.setItem("darkMode", "true");
+      } else {
+        document.documentElement.classList.remove("dark");
+        localStorage.setItem("darkMode", "false");
+      }
+    }
   };
 
   return (

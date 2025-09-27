@@ -1,6 +1,6 @@
 import { useGetDashboardMetricsQuery } from "@/state/api";
 import { TrendingUp } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 import {
   Bar,
   BarChart,
@@ -13,29 +13,22 @@ import {
 
 const CardSalesSummary = () => {
   const { data, isLoading, isError } = useGetDashboardMetricsQuery();
-  const salesData = data?.salesSummary || [];
+  const salesDataRaw = data?.salesSummary || [];
 
-  const [timeframe, setTimeframe] = useState("weekly");
+  // Ensure totalValue is always a number
+  const salesData = salesDataRaw.map((item) => ({
+    ...item,
+    totalValue: Number(item.totalValue) || 0,
+    changePercentage: Number(item.changePercentage) || 0,
+  }));
 
   const totalValueSum =
     salesData.reduce((acc, curr) => acc + curr.totalValue, 0) || 0;
 
   const averageChangePercentage =
     salesData.reduce((acc, curr, _, array) => {
-      return acc + curr.changePercentage! / array.length;
+      return acc + curr.changePercentage / array.length;
     }, 0) || 0;
-
-  const highestValueData = salesData.reduce((acc, curr) => {
-    return acc.totalValue > curr.totalValue ? acc : curr;
-  }, salesData[0] || {});
-
-  const highestValueDate = highestValueData.date
-    ? new Date(highestValueData.date).toLocaleDateString("en-US", {
-        month: "numeric",
-        day: "numeric",
-        year: "2-digit",
-      })
-    : "N/A";
 
   if (isError) {
     return <div className="m-5">Failed to fetch data</div>;
@@ -73,18 +66,9 @@ const CardSalesSummary = () => {
                   {averageChangePercentage.toFixed(2)}%
                 </span>
               </div>
-              <select
-                className="shadow-sm border border-gray-300 bg-white p-2 rounded"
-                value={timeframe}
-                onChange={(e) => {
-                  setTimeframe(e.target.value);
-                }}
-              >
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-              </select>
+              {/* Removed dropdown */}
             </div>
+
             {/* CHART */}
             <ResponsiveContainer width="100%" height={350} className="px-7">
               <BarChart
@@ -108,8 +92,8 @@ const CardSalesSummary = () => {
                   axisLine={false}
                 />
                 <Tooltip
-                  formatter={(value: number) => [
-                    `$${value.toLocaleString("en")}`,
+                  formatter={(value: number | string) => [
+                    `$${Number(value).toLocaleString("en")}`,
                   ]}
                   labelFormatter={(label) => {
                     const date = new Date(label);
@@ -130,17 +114,7 @@ const CardSalesSummary = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* FOOTER */}
-          <div>
-            <hr />
-            <div className="flex justify-between items-center mt-6 text-sm px-7 mb-4">
-              <p>{salesData.length || 0} days</p>
-              <p className="text-sm">
-                Highest Sales Date:{" "}
-                <span className="font-bold">{highestValueDate}</span>
-              </p>
-            </div>
-          </div>
+          {/* Removed footer */}
         </>
       )}
     </div>
