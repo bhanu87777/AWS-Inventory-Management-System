@@ -66,13 +66,15 @@ const Navbar = () => {
           </div>
           <hr className="w-0 h-7 border border-solid border-l border-gray-300 mx-3" />
           <div className="flex items-center gap-3 cursor-pointer">
-            <Image
-              src="https://s3-inventorymanagementapplication.s3.ap-south-1.amazonaws.com/profile.jpg"
-              alt="Profile"
-              width={50}
-              height={50}
-              className="rounded-full h-full object-cover"
-            />
+            <div className="w-9 h-9 rounded-full overflow-hidden">
+              <Image
+                src="/profile.png"
+                alt="Profile"
+                width={36}
+                height={36}
+                className="object-cover w-full h-full"
+              />
+            </div>
             <span className="font-semibold">Bhanu</span>
           </div>
         </div>
